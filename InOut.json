@@ -1,0 +1,9 @@
+{
+    "InOut": "O",
+    "name": "McDonald's",
+    "type": "Food",
+    "value": 3000,
+    "installments": 1,
+    "IsPlanned": true,
+    "date": "04-14-2022"
+}
