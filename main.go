@@ -1,41 +1,45 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/YanAmorelli/financial_control/database"
+	"github.com/YanAmorelli/financial_control/models"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
-type Money struct {
-	Id           int
-	InOut        string `json:"inOut"`
-	Name         string `json:"name"`
-	InOutType    string `json:"inOutType"`
-	Value        int    `json:"value"`
-	Installments int    `json:"installments"`
-	IsPlanned    bool   `json:"isPlanned"`
-	Date         string `json:"date"`
+type DBClient struct {
+	DB *gorm.DB
 }
 
-type Balance struct {
-	Id         int
-	Difference int
-	YearMonth  string
-}
-
-func PostInOut(c echo.Context) error {
-	m := new(Money)
-	if err := c.Bind(&m); err != nil {
-		return c.JSON(http.StatusCreated, err)
+func (db *DBClient) PostInOut(c echo.Context) error {
+	t := new(models.Transaction)
+	if err := c.Bind(&t); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	return c.JSON(http.StatusCreated, m)
+	if err := db.DB.Create(&t).Error; err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusCreated, t)
 }
 
 func main() {
 	e := echo.New()
 
-	e.POST("/money", PostInOut)
+	dsn := "host=localhost port=5432 user= password= dbname="
+	db, err := database.ConnectDatabase(dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dbClient := DBClient{DB: db}
+
+	e.POST("/transaction", dbClient.PostInOut)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
