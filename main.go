@@ -4,25 +4,26 @@ import (
 	"log"
 
 	"github.com/YanAmorelli/financial_control/database"
-	inout "github.com/YanAmorelli/financial_control/handlers/InOut"
+	"github.com/YanAmorelli/financial_control/handlers"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
 	e := echo.New()
 
-	dsn := "host=localhost port=5432 user= password= dbname="
+	dsn := "host=localhost port=5432 user=postgres password=123456789 dbname=postgres"
 	db, err := database.ConnectDatabase(dsn)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	dbClient := inout.DBClient{DB: db}
+	dbClient := handlers.DBClient{DB: db}
 
-	e.POST("/transaction", dbClient.CreateInOut)
-	e.GET("/transaction/:id", dbClient.ReadInOutByID)
-	e.PUT("/transaction/:id", dbClient.UpdateInOut)
-	e.DELETE("/transaction/:id", dbClient.DeleteInOut)
+	e.POST("/newuser", dbClient.NewUser)
+	e.POST("/transaction", dbClient.CreateEntries)
+	e.GET("/transaction/:id", dbClient.ReadEntriesByID)
+	e.PUT("/transaction/:id", dbClient.UpdateEntries)
+	e.DELETE("/transaction/:id", dbClient.DeleteEntries)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
