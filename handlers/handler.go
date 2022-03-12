@@ -20,14 +20,19 @@ func (db *DBClient) CreateEntries(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	if err := db.DB.Table("monthly_balance").Where("year_month = ?", entries.Date).First(&mBalance).Error; err != nil {
-		return err
+	dayOne := "01"
+	monthsFisrtDay := entries.Date[:8] + dayOne
+	if err := db.DB.Table("monthly_balance").Where("year_month = ?", monthsFisrtDay).FirstOrCreate(&mBalance, models.MonthlyBalance{
+		Amount:    0,
+		YearMonth: monthsFisrtDay,
+	}).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 	entries.MonthlyBalanceID = mBalance.Id
 	mBalance.Amount += entries.Amount
 
 	if err := db.DB.Table("monthly_balance").Save(mBalance).Error; err != nil {
-		return err
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	if err := db.DB.Table("entries").Create(&entries).Error; err != nil {
