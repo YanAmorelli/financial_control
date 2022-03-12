@@ -1,0 +1,8 @@
+{
+    "title": "April's Salary",
+    "type": "Salary",
+    "value": 1000000,
+    "installments": 1,
+    "IsPlanned": true,
+    "date": "2022-04-05"
+}

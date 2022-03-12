@@ -19,11 +19,11 @@ func main() {
 
 	dbClient := handlers.DBClient{DB: db}
 
-	e.POST("/newuser", dbClient.NewUser)
+	// e.POST("/newuser", dbClient.NewUser)
 	e.POST("/transaction", dbClient.CreateEntries)
-	e.GET("/transaction/:id", dbClient.ReadEntriesByID)
-	e.PUT("/transaction/:id", dbClient.UpdateEntries)
-	e.DELETE("/transaction/:id", dbClient.DeleteEntries)
+	// e.GET("/transaction/:id", dbClient.ReadEntriesByID)
+	// e.PUT("/transaction/:id", dbClient.UpdateEntries)
+	// e.DELETE("/transaction/:id", dbClient.DeleteEntries)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
